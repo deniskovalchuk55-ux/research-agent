@@ -1,0 +1,13 @@
+{
+  "name": "research-agent",
+  "version": "1.0.0",
+  "description": "AI Market-Research Agent: Telegram чат + Exa пошук + Claude. MVP",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
