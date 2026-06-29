@@ -1,0 +1,13 @@
+{
+  "name": "research-agent",
+  "version": "3.0.0",
+  "description": "AI Research Agent — методологія: 11 задач, роутер інструментів, фіксовані форми, критерії, лінзи, памʼять, Google Sheets, візуалізація логіки",
+  "main": "bot.js",
+  "type": "module",
+  "scripts": { "start": "node bot.js" },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.66.0",
+    "pg": "^8.13.1",
+    "googleapis": "^144.0.0"
+  }
+}
