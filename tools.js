@@ -50,21 +50,28 @@ export async function perplexitySearch(query) {
 }
 
 // ─── APIFY (IG/TikTok акаунти й контент) ─────────────────────────────────────
-// Запускає актора Instagram scraper. Потребує APIFY_API_KEY.
+// Шукає Instagram-акаунти/контент. Потребує APIFY_API_KEY.
 export async function apifySearch(query, num = 10) {
-  // actor: apify/instagram-search-scraper (пошук за хештегом/ключем)
+  // чистимо запит від службових слів для пошуку по IG
+  const clean = query.replace(/гео|ніша|платформа|instagram|акаунти|знайди|топ/gi, "").trim().slice(0, 60);
   const actor = "apify~instagram-search-scraper";
   const res = await fetch(`https://api.apify.com/v2/acts/${actor}/run-sync-get-dataset-items?token=${APIFY_API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ search: query, searchType: "user", searchLimit: num }),
+    body: JSON.stringify({
+      search: clean || query.slice(0, 60),
+      searchType: "user",
+      searchLimit: num,
+      resultsLimit: num,
+    }),
   });
   if (!res.ok) throw new Error(`Apify ${res.status}: ${(await res.text()).slice(0,120)}`);
   const items = await res.json();
-  return (items || []).slice(0, num).map(it => ({
-    title: it.username || it.name || it.fullName || "",
+  if (!Array.isArray(items) || !items.length) return [];
+  return items.slice(0, num).map(it => ({
+    title: it.username ? `@${it.username}` : (it.name || it.fullName || ""),
     url: it.url || (it.username ? `https://instagram.com/${it.username}` : ""),
-    text: `${it.fullName||""} ${it.biography||""} підписників: ${it.followersCount||"?"}`.trim(),
+    text: `${it.fullName||""}${it.biography ? " — "+it.biography : ""}${it.followersCount ? " · підписників: "+it.followersCount : ""}`.trim(),
     source: "apify",
   }));
 }
